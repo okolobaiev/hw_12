@@ -66,6 +66,31 @@ class AddressBook(UserDict):
                     record.add(phone)
             self.add_record(record)
 
+    def find_by_part_of_name_or_phone(self, search_term):
+        address_book_str = ""
+        add_to_address_book = False
+        for v in self.data.values():
+            if search_term in v.name.value:
+                add_to_address_book = True
+
+            phones_str = ""
+            for el in v.phones:
+                if search_term in el.value:
+                    add_to_address_book = True
+                phones_str += el.value + ", "
+            phones_str = phones_str.strip().removesuffix(",")
+
+            if add_to_address_book:
+                address_book_str += (
+                    f"name: {v.name.value}, birthday: {v.birthday.value}, phones: {phones_str}"
+                    + "\n"
+                )
+
+        if len(address_book_str) > 0:
+            return address_book_str.removesuffix("\n")
+        else:
+            return "We didn't find anything"
+
 
 class Record:
     def __init__(self, name, phone=None, birthday=None) -> None:
@@ -199,9 +224,15 @@ if __name__ == "__main__":
     birthday2 = Birthday("02-02-1992")
     rec2 = Record(name2, phone2, birthday2)
 
+    name3 = Name("Tomas")
+    phone3 = Phone("0987654321")
+    birthday3 = Birthday("02-02-1992")
+    rec3 = Record(name3, phone3, birthday3)
+
     ab = AddressBook()
     ab.add_record(rec1)
     ab.add_record(rec2)
+    ab.add_record(rec3)
     ab.save_to_disk("adress_book.txt")
     # ab.load_from_disk("adress_book.txt")
 
@@ -212,7 +243,10 @@ if __name__ == "__main__":
     # assert isinstance(ab["Bill"].birthday, Birthday)
     # assert ab["Bill"].phones[0].value == "1234567890"
 
-    for i in ab.iterator(1):
-        print(i)
+    # for i in ab.iterator(1):
+    #     print(i)
+
+    print(ab.find_by_part_of_name_or_phone("To"))
+    print(ab.find_by_part_of_name_or_phone("098"))
 
     print("All Ok)")
